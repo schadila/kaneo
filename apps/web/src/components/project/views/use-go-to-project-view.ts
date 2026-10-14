@@ -15,7 +15,8 @@ export function useGoToProjectView({
 }: {
   workspaceId: string;
   projectId: string;
-  currentRoute: ProjectRoute;
+  // null: not on a task view (e.g. docs), so every view navigates.
+  currentRoute: ProjectRoute | null;
 }) {
   const navigate = useNavigate();
   const setViewMode = useUserPreferencesStore((state) => state.setViewMode);

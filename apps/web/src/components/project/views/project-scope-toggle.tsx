@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/cn";
 import { useUserPreferencesStore } from "@/store/user-preferences";
 import { ProjectScopeLink } from "./project-scope-link";
 import { type ProjectView, tasksViewFor } from "./project-views";
@@ -8,6 +10,7 @@ type ProjectScopeToggleProps = {
   projectId: string;
   currentView: ProjectView;
   onSelect: (view: ProjectView) => void;
+  docsActive?: boolean;
 };
 
 export function ProjectScopeToggle({
@@ -15,14 +18,14 @@ export function ProjectScopeToggle({
   projectId,
   currentView,
   onSelect,
+  docsActive = false,
 }: ProjectScopeToggleProps) {
   const { t } = useTranslation();
   const taskLayout = useUserPreferencesStore((state) => state.taskLayout);
   const viewMode = useUserPreferencesStore((state) => state.viewMode);
   const onBacklog = currentView === "backlog";
-  const tasksView = onBacklog
-    ? tasksViewFor(taskLayout, viewMode)
-    : currentView;
+  const tasksView =
+    onBacklog || docsActive ? tasksViewFor(taskLayout, viewMode) : currentView;
 
   return (
     <nav
@@ -33,7 +36,7 @@ export function ProjectScopeToggle({
         view={tasksView}
         workspaceId={workspaceId}
         projectId={projectId}
-        active={!onBacklog}
+        active={!onBacklog && !docsActive}
         onSelect={onSelect}
       >
         {t("tasks:title")}
@@ -42,11 +45,24 @@ export function ProjectScopeToggle({
         view="backlog"
         workspaceId={workspaceId}
         projectId={projectId}
-        active={onBacklog}
+        active={onBacklog && !docsActive}
         onSelect={onSelect}
       >
         {t("tasks:view.backlog")}
       </ProjectScopeLink>
+      <Link
+        to="/dashboard/workspace/$workspaceId/project/$projectId/docs"
+        params={{ workspaceId, projectId }}
+        aria-current={docsActive ? "page" : undefined}
+        className={cn(
+          "inline-flex h-6 items-center rounded-md px-2.5 text-[13px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+          docsActive
+            ? "bg-accent text-foreground shadow-xs/5"
+            : "text-muted-foreground hover:text-foreground",
+        )}
+      >
+        {t("workspace:pages.docsTitle")}
+      </Link>
     </nav>
   );
 }

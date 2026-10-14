@@ -30,6 +30,7 @@ import {
 } from "@/lib/due-date-status";
 import { getInitials } from "@/lib/get-initials";
 import { getPriorityIcon } from "@/lib/priority";
+import { priorityAccentClass } from "@/lib/priority-accent";
 import { toast } from "@/lib/toast";
 import useBulkSelectionStore from "@/store/bulk-selection";
 import useProjectStore from "@/store/project";
@@ -185,8 +186,9 @@ function TaskRow({ task, projectSlug }: TaskRowProps) {
           <div
             onClick={handleClick}
             className={cn(
-              "group relative flex cursor-pointer items-center gap-3 px-4 py-1.5 outline-none transition-colors",
+              "group relative flex cursor-pointer items-center gap-3 px-4 py-2.5 outline-none transition-colors",
               isTaskSelected ? "bg-accent/45" : "hover:bg-accent/60",
+              showPriority && priorityAccentClass(task.priority),
             )}
             data-task-id={task.id}
             data-shortcut-surface
@@ -208,7 +210,14 @@ function TaskRow({ task, projectSlug }: TaskRowProps) {
 
             <div className="flex-1 min-w-0 flex items-center gap-2">
               <div className="flex items-center gap-2 justify-between w-full">
-                <span className="text-sm text-foreground truncate">
+                <span
+                  className={cn(
+                    "truncate text-sm font-medium",
+                    taskIsCompleted
+                      ? "text-muted-foreground line-through"
+                      : "text-foreground",
+                  )}
+                >
                   {task.title}
                 </span>
                 <div className="flex items-center gap-1">
@@ -226,7 +235,7 @@ function TaskRow({ task, projectSlug }: TaskRowProps) {
 
             {showDueDates && task.dueDate && (
               <div
-                className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded flex-shrink-0 ${dueDateStatusColors[getDueDateStatus(task.dueDate, taskIsCompleted)]}`}
+                className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md flex-shrink-0 ${dueDateStatusColors[getDueDateStatus(task.dueDate, taskIsCompleted)]}`}
               >
                 {getDueDateStatus(task.dueDate, taskIsCompleted) ===
                   "overdue" && <CalendarX className="w-3 h-3" />}

@@ -2613,6 +2613,10 @@
 				"title": "Time tracking started",
 				"contentWithTask": "Time tracking started on task: {{taskTitle}}",
 				"contentWithoutTask": "Time tracking started on a task"
+			},
+			"page_mention": {
+				"title": "{{mentionerName}} mentioned you",
+				"content": "{{mentionerName}} mentioned you in: {{pageTitle}}"
 			}
 		},
 		"inbox": {
@@ -3426,6 +3430,58 @@
 				"project": "Project"
 			},
 			"truncated": "Showing the first {{shown}} of {{total}} tasks."
+		},
+		"pages": {
+			"wikiTitle": "Wiki",
+			"docsTitle": "Docs",
+			"treeLabel": "Pages",
+			"newPage": "New page",
+			"noPages": "No pages yet",
+			"untitled": "Untitled",
+			"titleLabel": "Page title",
+			"editorPlaceholder": "Write something, or type / for commands…",
+			"addSubpage": "Add subpage",
+			"expand": "Expand",
+			"collapse": "Collapse",
+			"actions": "Page actions",
+			"delete": "Delete page",
+			"deleteTitle": "Delete this page?",
+			"deleteDescription": "The page and all of its subpages will be permanently deleted.",
+			"deleteFailed": "Page could not be deleted",
+			"createFailed": "Page could not be created",
+			"saveFailed": "Changes could not be saved",
+			"updated": "Updated {{time}}",
+			"notFound": "Page not found",
+			"wikiEmptyTitle": "Team wiki",
+			"wikiEmptyDescription": "Shared knowledge for the whole workspace. Pick a page on the left or create a new one.",
+			"docsEmptyTitle": "Project docs",
+			"docsEmptyDescription": "Documentation for this project. Pick a page on the left or create a new one.",
+			"format": {
+				"bold": "Bold",
+				"italic": "Italic",
+				"strike": "Strikethrough",
+				"code": "Inline code",
+				"link": "Link"
+			},
+			"openPage": "Open page"
+		},
+		"dashboard": {
+			"title": "My dashboard",
+			"greeting": "Hi {{name}}",
+			"subtitle": "Your tasks, mentions and pages across all workspaces.",
+			"tasks": "My open tasks",
+			"noTasks": "Nothing assigned to you. Enjoy the calm.",
+			"partialTasks_one": "Tasks from {{count}} workspace could not be loaded.",
+			"partialTasks_other": "Tasks from {{count}} workspaces could not be loaded.",
+			"inbox": "Mentions & inbox",
+			"filterUnread": "Unread",
+			"filterMentions": "Mentions",
+			"filterAll": "All",
+			"markAllRead": "Mark all read",
+			"noNotifications": "You're all caught up.",
+			"unread": "Unread",
+			"recentPages": "Recently edited pages",
+			"noRecentPages": "Pages you create or edit in a wiki or project docs show up here."
 		}
 	},
 	"team": {

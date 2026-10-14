@@ -76,18 +76,21 @@ export default function ProjectLayout({
           ? "gantt"
           : "board");
   const currentView = resolveProjectView(resolvedRoute, viewMode);
+  const onDocs = location.pathname.endsWith("/docs");
   const showViews = showViewSwitcher && !unavailableReason;
 
   const goToView = useGoToProjectView({
     workspaceId,
     projectId,
-    currentRoute: resolvedRoute,
+    currentRoute: onDocs ? null : resolvedRoute,
   });
   useProjectViewShortcuts(goToView, currentView, showViews);
 
   const handleProjectSwitch = (nextProjectId: string) => {
     navigate({
-      to: PROJECT_ROUTE_PATHS[resolvedRoute],
+      to: onDocs
+        ? "/dashboard/workspace/$workspaceId/project/$projectId/docs"
+        : PROJECT_ROUTE_PATHS[resolvedRoute],
       params: {
         workspaceId,
         projectId: nextProjectId,
@@ -157,6 +160,7 @@ export default function ProjectLayout({
                 projectId={projectId}
                 currentView={currentView}
                 onSelect={goToView}
+                docsActive={onDocs}
               />
             )}
             {summary}

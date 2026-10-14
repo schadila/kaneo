@@ -28,26 +28,18 @@ export const Route = createFileRoute("/_layout/_authenticated/dashboard/")({
     const activeWorkspaceId = session?.data?.session?.activeOrganizationId;
 
     if (workspaces && workspaces.length > 0) {
+      // Eden: land on the cross-workspace personal dashboard. The sidebar
+      // still needs an active workspace, so keep or pick one.
       if (
-        activeWorkspaceId &&
-        workspaces.some((ws) => ws.id === activeWorkspaceId)
+        !activeWorkspaceId ||
+        !workspaces.some((ws) => ws.id === activeWorkspaceId)
       ) {
-        throw redirect({
-          to: "/dashboard/workspace/$workspaceId",
-          params: { workspaceId: activeWorkspaceId },
+        await authClient.organization.setActive({
+          organizationId: workspaces[0].id,
         });
       }
 
-      const firstWorkspace = workspaces[0];
-
-      authClient.organization.setActive({
-        organizationId: firstWorkspace.id,
-      });
-
-      throw redirect({
-        to: "/dashboard/workspace/$workspaceId",
-        params: { workspaceId: firstWorkspace.id },
-      });
+      throw redirect({ to: "/dashboard/me" });
     }
     throw redirect({ to: "/onboarding" });
   },

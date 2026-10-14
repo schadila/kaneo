@@ -2613,6 +2613,10 @@
 				"title": "Zeiterfassung gestartet",
 				"contentWithTask": "Die Zeiterfassung für die Aufgabe \"{{taskTitle}}\" wurde gestartet",
 				"contentWithoutTask": "Die Zeiterfassung für eine Aufgabe wurde gestartet"
+			},
+			"page_mention": {
+				"title": "{{mentionerName}} hat dich erwähnt",
+				"content": "{{mentionerName}} hat dich erwähnt in: {{pageTitle}}"
 			}
 		},
 		"inbox": {
@@ -3426,6 +3430,58 @@
 			},
 			"empty": "Nothing assigned to you",
 			"loadError": "Your tasks couldn't be loaded."
+		},
+		"pages": {
+			"wikiTitle": "Wiki",
+			"docsTitle": "Docs",
+			"treeLabel": "Seiten",
+			"newPage": "Neue Seite",
+			"noPages": "Noch keine Seiten",
+			"untitled": "Ohne Titel",
+			"titleLabel": "Seitentitel",
+			"editorPlaceholder": "Schreib etwas oder tippe / für Befehle…",
+			"addSubpage": "Unterseite hinzufügen",
+			"expand": "Aufklappen",
+			"collapse": "Zuklappen",
+			"actions": "Seitenaktionen",
+			"delete": "Seite löschen",
+			"deleteTitle": "Diese Seite löschen?",
+			"deleteDescription": "Die Seite und alle Unterseiten werden endgültig gelöscht.",
+			"deleteFailed": "Seite konnte nicht gelöscht werden",
+			"createFailed": "Seite konnte nicht erstellt werden",
+			"saveFailed": "Änderungen konnten nicht gespeichert werden",
+			"updated": "Aktualisiert {{time}}",
+			"notFound": "Seite nicht gefunden",
+			"wikiEmptyTitle": "Team-Wiki",
+			"wikiEmptyDescription": "Gemeinsames Wissen für den ganzen Workspace. Wähle links eine Seite oder erstelle eine neue.",
+			"docsEmptyTitle": "Projekt-Docs",
+			"docsEmptyDescription": "Dokumentation zu diesem Projekt. Wähle links eine Seite oder erstelle eine neue.",
+			"format": {
+				"bold": "Fett",
+				"italic": "Kursiv",
+				"strike": "Durchgestrichen",
+				"code": "Inline-Code",
+				"link": "Link"
+			},
+			"openPage": "Seite öffnen"
+		},
+		"dashboard": {
+			"title": "Mein Dashboard",
+			"greeting": "Hallo {{name}}",
+			"subtitle": "Deine Aufgaben, Erwähnungen und Seiten aus allen Workspaces.",
+			"tasks": "Meine offenen Aufgaben",
+			"noTasks": "Dir ist nichts zugewiesen. Geniess die Ruhe.",
+			"partialTasks_one": "Aufgaben aus {{count}} Workspace konnten nicht geladen werden.",
+			"partialTasks_other": "Aufgaben aus {{count}} Workspaces konnten nicht geladen werden.",
+			"inbox": "Erwähnungen & Inbox",
+			"filterUnread": "Ungelesen",
+			"filterMentions": "Erwähnungen",
+			"filterAll": "Alle",
+			"markAllRead": "Alle gelesen",
+			"noNotifications": "Du bist auf dem neusten Stand.",
+			"unread": "Ungelesen",
+			"recentPages": "Zuletzt bearbeitete Seiten",
+			"noRecentPages": "Seiten, die du im Wiki oder in Projekt-Docs erstellst oder bearbeitest, erscheinen hier."
 		}
 	},
 	"team": {

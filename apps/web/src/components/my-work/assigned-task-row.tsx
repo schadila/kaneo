@@ -1,27 +1,35 @@
 import { Link } from "@tanstack/react-router";
 import type { AssignedTask } from "@/fetchers/task/get-assigned-tasks";
+import { cn } from "@/lib/cn";
 import { getColumnIcon } from "@/lib/column";
 import { getStatusDisplayLabel } from "@/lib/i18n/domain";
 import { resolveLabelColor } from "@/lib/label-color";
 import { getPriorityIcon } from "@/lib/priority";
-import { DueDateText } from "./due-date-text";
+import { priorityAccentClass } from "@/lib/priority-accent";
+import { DueDateBadge } from "./due-date-badge";
 
 type AssignedTaskRowProps = {
   task: AssignedTask;
   workspaceId: string;
   showLabels?: boolean;
+  // Shown before the project on cross-workspace lists (personal dashboard).
+  workspaceName?: string;
 };
 
 export function AssignedTaskRow({
   task,
   workspaceId,
   showLabels = false,
+  workspaceName,
 }: AssignedTaskRowProps) {
   return (
     <Link
       to="/dashboard/workspace/$workspaceId/project/$projectId/task/$taskId"
       params={{ workspaceId, projectId: task.projectId, taskId: task.id }}
-      className="flex h-11 items-center gap-2.5 border-border/50 border-b px-1 outline-none transition-colors hover:bg-accent/50 focus-visible:bg-accent/50"
+      className={cn(
+        "relative flex min-h-12 items-center gap-2.5 border-border/50 border-b py-2 pr-1 pl-3 outline-none transition-colors hover:bg-accent/50 focus-visible:bg-accent/50",
+        priorityAccentClass(task.priority),
+      )}
     >
       <span className="flex w-4 shrink-0 justify-center [&_svg]:size-3.5">
         {getPriorityIcon(task.priority)}
@@ -32,38 +40,51 @@ export function AssignedTaskRow({
       >
         {getColumnIcon(task.status, false, task.statusIcon)}
       </span>
-      <span className="hidden w-16 shrink-0 truncate font-medium text-muted-foreground text-xs sm:block">
-        {task.number == null
-          ? task.projectSlug
-          : `${task.projectSlug}-${task.number}`}
-      </span>
-      <span className="min-w-0 flex-1 truncate text-foreground text-sm">
-        {task.title}
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="truncate font-medium text-foreground text-sm">
+          {task.title}
+        </span>
+        <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs">
+          <span className="shrink-0 font-mono">
+            {task.number == null
+              ? task.projectSlug
+              : `${task.projectSlug}-${task.number}`}
+          </span>
+          <span aria-hidden="true">·</span>
+          <span className="truncate">
+            {workspaceName
+              ? `${workspaceName} / ${task.projectName}`
+              : task.projectName}
+          </span>
+        </span>
       </span>
       {showLabels && task.labels.length > 0 && (
-        <span className="hidden w-44 shrink-0 items-center gap-2.5 overflow-hidden lg:flex">
-          {task.labels.slice(0, 2).map((label) => (
-            <span
-              key={label.id}
-              className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs"
-            >
+        <span className="hidden shrink-0 items-center gap-1 lg:flex">
+          {task.labels.slice(0, 2).map((label) => {
+            const color = resolveLabelColor(label.color);
+            return (
               <span
-                aria-hidden="true"
-                className="size-1.5 shrink-0 rounded-full"
-                style={{ backgroundColor: resolveLabelColor(label.color) }}
-              />
-              <span className="truncate">{label.name}</span>
-            </span>
-          ))}
+                key={label.id}
+                className="flex h-5 max-w-28 items-center gap-1 rounded-full border px-2 text-xs"
+                style={{
+                  borderColor: `color-mix(in srgb, ${color} 35%, transparent)`,
+                  backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  className="size-1.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: color }}
+                />
+                <span className="truncate text-foreground/80">
+                  {label.name}
+                </span>
+              </span>
+            );
+          })}
         </span>
       )}
-      <span className="hidden w-28 shrink-0 truncate text-muted-foreground text-xs sm:block">
-        {task.projectName}
-      </span>
-      <DueDateText
-        dueDate={task.dueDate}
-        className="shrink-0 text-right sm:w-20"
-      />
+      <DueDateBadge dueDate={task.dueDate} className="shrink-0" />
     </Link>
   );
 }

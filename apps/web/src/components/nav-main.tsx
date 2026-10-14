@@ -1,7 +1,9 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import {
+  BookOpen,
   CircleCheck,
   House,
+  LayoutDashboard,
   Inbox,
   type LucideIcon,
   Mail,
@@ -48,6 +50,11 @@ export function NavMain() {
   ).length;
 
   const navItems: NavItem[] = [
+    {
+      title: t("workspace:dashboard.title"),
+      icon: LayoutDashboard,
+      url: "/dashboard/me",
+    },
     { title: t("navigation:sidebar.home"), icon: House, url: homeUrl },
     {
       title: t("navigation:sidebar.inbox"),
@@ -61,6 +68,11 @@ export function NavMain() {
       icon: CircleCheck,
       url: `${homeUrl}/my-tasks`,
       count: assignedTasks?.total,
+    },
+    {
+      title: t("workspace:pages.wikiTitle"),
+      icon: BookOpen,
+      url: `${homeUrl}/wiki`,
     },
     {
       title: t("navigation:sidebar.members"),

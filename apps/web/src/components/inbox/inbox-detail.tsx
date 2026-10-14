@@ -7,6 +7,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatDateTime, formatRelativeTime } from "@/lib/format";
 import type { Notification } from "@/types/notification";
+import { PageLink } from "@/components/pages/page-link";
+import { pageMentionTarget } from "@/components/pages/page-mention-target";
 import { InboxTask } from "./inbox-task";
 import { NotificationIcon } from "./notification-icon";
 
@@ -25,6 +27,7 @@ export function InboxDetail({
   const taskId =
     notification.resourceType === "task" ? notification.resourceId : null;
   const content = getNotificationContent(notification, t);
+  const page = pageMentionTarget(notification);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -61,6 +64,15 @@ export function InboxDetail({
               )}
             </div>
           </div>
+
+          {page && (
+            <PageLink
+              {...page}
+              className="self-start text-[13px] font-medium underline-offset-4 hover:underline"
+            >
+              {t("workspace:pages.openPage")}
+            </PageLink>
+          )}
 
           {taskId && (
             <InboxTask key={taskId} taskId={taskId} workspaceId={workspaceId} />

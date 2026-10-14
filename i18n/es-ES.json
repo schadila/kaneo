@@ -2648,6 +2648,10 @@
 			"task_overdue": {
 				"title": "Tarea vencida",
 				"content": "{{taskTitle}} ha superado su fecha de vencimiento"
+			},
+			"page_mention": {
+				"content": "{{mentionerName}} mentioned you in: {{pageTitle}}",
+				"title": "{{mentionerName}} mentioned you"
 			}
 		},
 		"reminderLeadTime": {
@@ -3484,6 +3488,59 @@
 			},
 			"empty": "Nothing assigned to you",
 			"loadError": "Your tasks couldn't be loaded."
+		},
+		"pages": {
+			"actions": "Page actions",
+			"addSubpage": "Add subpage",
+			"collapse": "Collapse",
+			"createFailed": "Page could not be created",
+			"delete": "Delete page",
+			"deleteDescription": "The page and all of its subpages will be permanently deleted.",
+			"deleteFailed": "Page could not be deleted",
+			"deleteTitle": "Delete this page?",
+			"docsEmptyDescription": "Documentation for this project. Pick a page on the left or create a new one.",
+			"docsEmptyTitle": "Project docs",
+			"docsTitle": "Docs",
+			"editorPlaceholder": "Write something, or type / for commands…",
+			"expand": "Expand",
+			"format": {
+				"bold": "Bold",
+				"code": "Inline code",
+				"italic": "Italic",
+				"link": "Link",
+				"strike": "Strikethrough"
+			},
+			"newPage": "New page",
+			"noPages": "No pages yet",
+			"notFound": "Page not found",
+			"saveFailed": "Changes could not be saved",
+			"titleLabel": "Page title",
+			"treeLabel": "Pages",
+			"untitled": "Untitled",
+			"updated": "Updated {{time}}",
+			"wikiEmptyDescription": "Shared knowledge for the whole workspace. Pick a page on the left or create a new one.",
+			"wikiEmptyTitle": "Team wiki",
+			"wikiTitle": "Wiki",
+			"openPage": "Open page"
+		},
+		"dashboard": {
+			"filterAll": "All",
+			"filterMentions": "Mentions",
+			"filterUnread": "Unread",
+			"greeting": "Hi {{name}}",
+			"inbox": "Mentions & inbox",
+			"markAllRead": "Mark all read",
+			"noNotifications": "You're all caught up.",
+			"noRecentPages": "Pages you create or edit in a wiki or project docs show up here.",
+			"noTasks": "Nothing assigned to you. Enjoy the calm.",
+			"partialTasks_many": "Tasks from {{count}} workspaces could not be loaded.",
+			"partialTasks_one": "Tasks from {{count}} workspace could not be loaded.",
+			"partialTasks_other": "Tasks from {{count}} workspaces could not be loaded.",
+			"recentPages": "Recently edited pages",
+			"subtitle": "Your tasks, mentions and pages across all workspaces.",
+			"tasks": "My open tasks",
+			"title": "My dashboard",
+			"unread": "Unread"
 		}
 	},
 	"team": {

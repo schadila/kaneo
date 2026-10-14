@@ -69,8 +69,8 @@ const ListColumnSection = memo(function ListColumnSection({
           <div className="flex items-center gap-2 h-4">
             {getColumnIcon(column.id, column.isFinal, column.icon)}
             <div className="flex items-center gap-1">
-              <span className="mt-1 mr-1">{column.name}</span>
-              <span className="text-xs text-muted-foreground mt-0.5">
+              <span className="mt-0.5 mr-1 font-semibold">{column.name}</span>
+              <span className="rounded-full bg-background px-1.5 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-border/70">
                 {column.tasks.length}
               </span>
             </div>

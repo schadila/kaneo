@@ -66,6 +66,11 @@ export function getNotificationTitle(
           ...eventData,
           defaultValue: notification.title ?? notification.type,
         });
+      case "page_mention":
+        return t("notifications:events.page_mention.title", {
+          ...eventData,
+          defaultValue: notification.title ?? notification.type,
+        });
       case "task_comment":
         return t("notifications:events.task_comment.title", {
           ...eventData,
@@ -130,6 +135,11 @@ export function getNotificationContent(
             });
       case "task_mention":
         return t("notifications:events.task_mention.content", {
+          ...eventData,
+          defaultValue: notification.content ?? "",
+        });
+      case "page_mention":
+        return t("notifications:events.page_mention.content", {
           ...eventData,
           defaultValue: notification.content ?? "",
         });
