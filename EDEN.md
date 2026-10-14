@@ -36,7 +36,10 @@ Secrets fehlschlagen. Das Image wird deshalb im Betriebs-Repo gebaut.
 
 **Wiki (pro Workspace)** — Sidebar → „Wiki“ (`/dashboard/workspace/:id/wiki`).
 Verschachtelte Seiten (Seitenbaum links, Seite rechts), gemeinsames Wissen für
-den ganzen Workspace.
+den ganzen Workspace. Seiten per **Drag & Drop** umsortieren und verschachteln
+(oberes/unteres Viertel einer Zeile = davor/danach, Mitte = als Unterseite,
+Ablagezone unter dem Baum = oberste Ebene); Alternative ohne Maus:
+„…“ → Nach oben / Nach unten.
 
 **Docs (pro Projekt)** — im Projekt neben „Tasks | Backlog“ der Reiter „Docs“
 (`…/project/:projectId/docs`). Eigener Seitenbaum je Projekt, nur für Leute
@@ -61,6 +64,13 @@ Sidebar → „Mein Dashboard“) — workspace-übergreifend:
 - *Erwähnungen & Inbox*: Benachrichtigungen aller Workspaces, Filter
   Ungelesen / Erwähnungen / Alle, „Alle gelesen“, Klick öffnet Task bzw. Seite
 - *Zuletzt bearbeitete Seiten*: eigene zuletzt erstellte/bearbeitete Seiten
+
+**Task-Vorlagen (pro Workspace)** — Einstellungen → „Task-Vorlagen“
+(`/dashboard/settings/workspace/templates`). Eine Vorlage ist eine Liste von
+Tasks mit Titel, Priorität, Labels und Fälligkeit „N Tage nach Start“. Im
+Projekt (alle Task-Ansichten, Toolbar) „Vorlage anwenden“: Vorlage, Startdatum,
+Spalte und Zuständige wählen, Vorschau mit berechneten Fälligkeiten, dann
+werden alle Tasks auf einmal angelegt.
 
 **Task-Listen mit mehr Akzent** (Projekt-Listenansicht, „Meine Aufgaben“,
 Home „Up next“, Dashboard) — farbiger Prioritätsbalken links (dringend rot,
@@ -109,11 +119,31 @@ Alle Routen unter `/api/page`, OpenAPI-Tag „Pages“ (`apps/docs/openapi.json`
 | GET | `/page/{id}` | Seite inkl. Markdown-Inhalt | Workspace-Mitglied (+ Projektzugriff) |
 | POST | `/page` | Seite anlegen (`workspaceId`, optional `projectId`, `parentId`, `title`) | + `task:update` |
 | PUT | `/page/{id}` | `title`, `icon`, `content` ändern | + `task:update` |
+| PUT | `/page/{id}/move` | `{ parentId: string\|null, index }` — umhängen/umsortieren im selben Wiki bzw. denselben Docs | + `task:update` |
 | DELETE | `/page/{id}` | Seite **inkl. aller Unterseiten** löschen | + `task:update` |
+
+Task-Vorlagen unter `/api/task-template`, OpenAPI-Tag „Task templates“:
+
+| Methode | Pfad | Zweck | Zugriff |
+|---|---|---|---|
+| GET | `/task-template/workspace/{workspaceId}` | Vorlagen des Workspaces | Workspace-Mitglied |
+| POST | `/task-template` | anlegen (`workspaceId`, `name`, `description`, `items[]`) | + `task:update` |
+| PUT | `/task-template/{id}` | ersetzen (`name`, `description`, `items[]`) | + `task:update` |
+| DELETE | `/task-template/{id}` | löschen (erzeugte Tasks bleiben) | + `task:update` |
+| POST | `/task-template/{id}/apply` | Tasks anlegen: `projectId`, optional `status` (Spalten-Slug, Default erste Spalte), `startDate` (ISO; Web schickt lokale 12:00), `assigneeId` | + `task:create`, Projektzugriff |
+
+`items[]`: `{ title, description?, priority, dueOffsetDays: int|null, labels: string[] }`
+(max. 100). „Anwenden“ ruft pro Eintrag Kaneos eigenes `createTask` auf
+(Nummer, Aktivität, Events, Integrationen wie von Hand) und hängt Labels über
+`createLabel` an — Zuordnung über den **Namen** der Workspace-Labels, unbekannte
+Namen werden übersprungen.
 
 Hinweise:
 - `/page/recent` ist vor `/page/{id}` registriert (sonst würde „recent“ als ID
   gelesen).
+- `move`: Transaktion mit Advisory-Lock pro Baum, Zyklus-Prüfung per
+  rekursivem CTE („in die eigene Unterseite“ → 400), Geschwister werden
+  neu durchnummeriert, deren `updated_at` bleibt unverändert.
 - Eine Unterseite übernimmt immer Workspace und Projekt der Elternseite;
   abweichende `projectId` → 400.
 - Neue Seiten werden ans Ende ihrer Geschwister gehängt (`position`).
@@ -151,6 +181,10 @@ Tabelle `page`:
 
 Indizes: (`workspace_id`, `project_id`), (`parent_id`).
 
+Tabelle `task_template`: `id`, `workspace_id` (FK cascade), `name`,
+`description`, `items` (jsonb, siehe API), `created_by`/`updated_by`
+(FK user, set null), `created_at`/`updated_at`; Index (`workspace_id`).
+
 **Warum keine Drizzle-Migration?** Fork-Migrationen würden die Nummerierung
 von Kaneo belegen (`0064_…`). Beim nächsten Upstream-Merge kollidiert das
 Journal — schlimmer: Drizzle wendet nur Migrationen an, die *neuer* als die
@@ -159,11 +193,12 @@ zuletzt angewendete sind; eine ältere Upstream-Migration würde in Prod
 
 - `page/page-table.ts` definiert die Tabelle für Drizzle-Queries, ist aber
   **nicht** in `database/schema.ts` (drizzle-kit sieht sie nie).
-- `page/migrate-page-table.ts` legt sie beim API-Start nach den
-  Kaneo-Migrationen mit `CREATE TABLE/INDEX IF NOT EXISTS` an (Advisory-Lock
-  gegen parallele Instanzen). Spätere Änderungen dort anhängen
+- `page/migrate-page-table.ts` und `task-template/migrate-task-template-table.ts`
+  legen die Tabellen beim API-Start nach den Kaneo-Migrationen mit
+  `CREATE TABLE/INDEX IF NOT EXISTS` an (Advisory-Lock gegen parallele
+  Instanzen). Einstieg: `eden-migrations.ts` → `runEdenMigrations()`. Spätere Änderungen dort anhängen
   (`ALTER TABLE … ADD COLUMN IF NOT EXISTS …`).
-- **Nie** `db:generate` mit der `page`-Tabelle in `schema.ts` laufen lassen.
+- **Nie** `db:generate` mit `page`/`task_template` in `schema.ts` laufen lassen.
 
 Backups: `page` liegt in derselben DB wie Kaneo, `deploy-prod.sh` sichert sie
 mit dem normalen `pg_dump`.
@@ -175,7 +210,10 @@ Keine neue Ressource im Rollen-Statement — Seiten nutzen die Task-Rechte:
 | Aktion | Benötigt |
 |---|---|
 | Wiki/Docs lesen | Workspace-Mitglied; bei Docs zusätzlich Projektzugriff (eingeschränkte Mitglieder sehen nur freigegebene Projekte) |
-| Seiten anlegen/bearbeiten/löschen | `task:update` (Built-in: member, admin, owner — **nicht** viewer) |
+| Seiten anlegen/bearbeiten/verschieben/löschen | `task:update` (Built-in: member, admin, owner — **nicht** viewer) |
+| Vorlagen sehen | Workspace-Mitglied |
+| Vorlagen anlegen/bearbeiten/löschen | `task:update` |
+| Vorlage anwenden | `task:create` + Projektzugriff |
 
 Im Web: `useWorkspacePermission().canUpdateTasks()`. API-Keys mit Scope
 brauchen ebenfalls `task:update`.
@@ -184,6 +222,7 @@ brauchen ebenfalls `task:update`.
 
 Routen:
 - `/dashboard/me` — `routes/_layout/_authenticated/dashboard/me.tsx`
+- `/dashboard/settings/workspace/templates` — `…/settings/workspace/templates.tsx`
 - `/dashboard/workspace/$workspaceId/wiki?page=<id>` — `…/$workspaceId/wiki.tsx`
 - `/dashboard/workspace/$workspaceId/project/$projectId/docs?page=<id>` — `…/$projectId/docs.tsx`
 - `/dashboard` leitet nach Login auf `/dashboard/me` (statt letzter Workspace;
@@ -201,6 +240,13 @@ Wichtige Bausteine:
   Workspaces, gleicher Query-Key wie Kaneos „Meine Aufgaben“
   (`["assigned-tasks", id, { countOnly: false }]`), damit Invalidierungen
   greifen
+- `components/pages/page-tree.tsx` — dnd-kit (`useDraggable`/`useDroppable`
+  pro Zeile, `DragOverlay`, Root-Ablagezone); Zielberechnung rein in
+  `page-move.ts` (`resolveDrop`, `resolveStep`, `applyMove` für das
+  optimistische Update) und `drop-zone.ts`, beide mit Tests
+- `components/task-templates/` — Einstellungsseite, Formular
+  (`template-draft.ts` mit Tests), `apply-template-dialog.tsx`,
+  `apply-template-button.tsx` (in `project-layout.tsx` eingehängt, nicht in Docs)
 - `lib/priority-accent.ts` — Prioritätsbalken (`before:`-Pseudo-Element)
 - `components/my-work/due-date-badge.tsx` — Fälligkeit als farbiger Badge
 
@@ -218,10 +264,13 @@ Neu (Fork-eigen):
 ```
 apps/api/src/page/                     API-Modul (Routen, Controller, Zugriff,
                                        Tabelle, Startup-Migration, Erwähnungen)
+apps/api/src/task-template/            Vorlagen-API (inkl. apply, Tabelle, Migration)
+apps/api/src/eden-migrations.ts        Einstieg für Fork-Tabellen beim Start
+apps/web/src/components/task-templates/ Vorlagen-UI
 apps/web/src/components/pages/         Wiki/Docs-UI
 apps/web/src/components/my-dashboard/  Dashboard-UI
-apps/web/src/fetchers/page/            API-Aufrufe
-apps/web/src/hooks/{queries,mutations}/page/
+apps/web/src/fetchers/{page,task-template}/
+apps/web/src/hooks/{queries,mutations}/{page,task-template}/
 apps/web/src/lib/priority-accent.ts
 apps/web/src/components/my-work/due-date-badge.tsx
 apps/web/src/routes/…/dashboard/me.tsx, …/wiki.tsx, …/docs.tsx
@@ -230,10 +279,12 @@ EDEN.md
 
 Geänderte Kaneo-Dateien (bei Upstream-Merges auf Konflikte achten):
 ```
-apps/api/src/index.ts                       Router + Startup-Migration einhängen
+apps/api/src/index.ts                       Router + runEdenMigrations einhängen
 apps/api/src/notification/response.ts       Typ page_mention in der Beschreibung
 apps/web/src/components/nav-main.tsx        Sidebar: Mein Dashboard, Wiki
-apps/web/src/components/common/project-layout.tsx           Docs-Reiter
+apps/web/src/components/common/project-layout.tsx           Docs-Reiter, „Vorlage anwenden“
+apps/web/src/components/common/project-layout.test.tsx      Mock für den Vorlagen-Button
+apps/web/src/components/settings/nav/build-settings-nav.ts  Link „Task-Vorlagen“ (+ Test)
 apps/web/src/components/project/views/project-scope-toggle.tsx
 apps/web/src/components/project/views/use-go-to-project-view.ts
 apps/web/src/components/inbox/inbox-detail.tsx              „Seite öffnen“
@@ -318,7 +369,6 @@ Checkliste nach dem Merge:
 
 ## Bekannte Grenzen / Ideen
 
-- Seiten nicht per Drag & Drop verschieben/umsortieren (kein `move`-Endpunkt).
 - Keine Bild-/Datei-Uploads in Seiten (Kaneo-Assets hängen an Tasks und
   brauchen S3; Bilder per URL gehen).
 - Kein gleichzeitiges Live-Bearbeiten: letzte Speicherung gewinnt, kein
@@ -328,3 +378,8 @@ Checkliste nach dem Merge:
 - Dashboard: „Meine Aufgaben“ max. 100 Tasks pro Workspace (Limit der
   Kaneo-API; der Zähler zeigt trotzdem die Gesamtzahl).
 - Erwähnungs-Benachrichtigungen haben keine eigene Einstellung (immer an).
+- Seiten nur innerhalb desselben Wikis bzw. derselben Projekt-Docs
+  verschiebbar (nicht zwischen Wiki und Projekten).
+- Drag & Drop im Seitenbaum nur mit Maus/Touch; Tastatur über das „…“-Menü.
+- Vorlagen: keine Unteraufgaben/Checklisten pro Task, keine Zuständigen pro
+  Eintrag (eine Person für alle beim Anwenden), Labels nur über den Namen.

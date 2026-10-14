@@ -28,6 +28,7 @@ import { cn } from "@/lib/cn";
 import { getProjectUnavailableReason } from "@/lib/project-unavailable-reason";
 import { useBackgroundStore } from "@/store/background";
 import { useUserPreferencesStore } from "@/store/user-preferences";
+import { ApplyTemplateButton } from "@/components/task-templates/apply-template-button";
 import ProjectUnavailable from "./project-unavailable";
 
 type ProjectLayoutProps = {
@@ -165,6 +166,12 @@ export default function ProjectLayout({
             )}
             {summary}
             <div className="ml-auto flex shrink-0 items-center gap-1">
+              {!onDocs && (
+                <ApplyTemplateButton
+                  workspaceId={workspaceId}
+                  projectId={projectId}
+                />
+              )}
               {toolbar}
             </div>
           </div>

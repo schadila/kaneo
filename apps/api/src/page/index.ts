@@ -11,12 +11,14 @@ import deletePage from "./controllers/delete-page";
 import getPage from "./controllers/get-page";
 import getPages from "./controllers/get-pages";
 import getRecentPages from "./controllers/get-recent-pages";
+import movePage from "./controllers/move-page";
 import updatePage from "./controllers/update-page";
 import { pageAccess } from "./page-access";
 import { pageListSchema, pageSchema, recentPageListSchema } from "./response";
 import {
   createPageBody,
   listPagesQuery,
+  movePageBody,
   pageParam,
   updatePageBody,
   workspaceIdParam,
@@ -120,6 +122,32 @@ const updatePageRoute = createRoute({
   },
 });
 
+const movePageRoute = createRoute({
+  method: "put",
+  operationId: "movePage",
+  path: "/{id}/move",
+  tags: ["Pages"],
+  summary: "Move page",
+  description:
+    "Move a page to another parent (null = top level) and/or position within the same wiki or project docs",
+  middleware: [pageAccess(), requireWorkspacePermission(PAGE_WRITE)] as const,
+  request: {
+    params: pageParam,
+    body: {
+      required: true,
+      content: { "application/json": { schema: movePageBody } },
+    },
+  },
+  responses: {
+    200: jsonResponse("Page moved", pageSchema),
+    400: errorResponse(
+      "Target is outside the page's wiki/docs, or would nest the page in itself",
+    ),
+    403: errorResponse("No access to the project, or missing task:update"),
+    404: errorResponse("Page not found"),
+  },
+});
+
 const deletePageRoute = createRoute({
   method: "delete",
   operationId: "deletePage",
@@ -158,6 +186,11 @@ const page = apiRouter()
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
     return c.json(await updatePage(id, c.get("userId"), body), 200);
+  })
+  .openapi(movePageRoute, async (c) => {
+    const { id } = c.req.valid("param");
+    const body = c.req.valid("json");
+    return c.json(await movePage(id, c.get("userId"), body), 200);
   })
   .openapi(deletePageRoute, async (c) => {
     const { id } = c.req.valid("param");

@@ -55,6 +55,9 @@ vi.mock("@/components/shared/modals/create-project-modal", () => ({
   default: () => null,
 }));
 vi.mock("@/components/page-title", () => ({ default: () => null }));
+vi.mock("@/components/task-templates/apply-template-button", () => ({
+  ApplyTemplateButton: () => null,
+}));
 
 afterEach(cleanup);
 

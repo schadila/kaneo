@@ -9,10 +9,12 @@ import {
 } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import useCreatePage from "@/hooks/mutations/page/use-create-page";
+import useMovePage from "@/hooks/mutations/page/use-move-page";
 import useGetPage from "@/hooks/queries/page/use-get-page";
 import useGetPages from "@/hooks/queries/page/use-get-pages";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { toast } from "@/lib/toast";
+import { type MoveTarget, resolveStep } from "./page-move";
 import { PageTree } from "./page-tree";
 import { PageView } from "./page-view";
 
@@ -36,6 +38,15 @@ export function PagesWorkspace({
   const { data: pages = [], isLoading } = useGetPages(workspaceId, projectId);
   const { data: page, isError } = useGetPage(pageId);
   const { mutate: createPage, isPending: creating } = useCreatePage();
+  const { mutate: movePage } = useMovePage(workspaceId, projectId);
+
+  const handleMove = (id: string, target: MoveTarget) =>
+    movePage(
+      { id, ...target },
+      { onError: () => toast.error(t("workspace:pages.moveFailed")) },
+    );
+  const stepTarget = (direction: -1 | 1) =>
+    pageId ? resolveStep(pages, pageId, direction) : null;
 
   const handleCreate = (parentId: string | null) =>
     createPage(
@@ -61,6 +72,7 @@ export function PagesWorkspace({
             creating={creating}
             onSelect={onNavigate}
             onCreate={handleCreate}
+            onMove={handleMove}
           />
         )}
       </aside>
@@ -71,6 +83,9 @@ export function PagesWorkspace({
             page={page}
             canEdit={canEdit}
             onAddChild={handleCreate}
+            moveUp={stepTarget(-1)}
+            moveDown={stepTarget(1)}
+            onMove={(target) => handleMove(page.id, target)}
             onDeleted={(deleted) => onNavigate(deleted.parentId ?? undefined)}
           />
         ) : pageId && !isError ? (

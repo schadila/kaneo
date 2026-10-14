@@ -5,6 +5,7 @@ import {
   CreditCard,
   Import,
   KeyRound,
+  ListChecks,
   Server,
   Settings,
   Shield,
@@ -124,6 +125,12 @@ export function buildSettingsNav({
           label: t("settings:workspaceLabels.title"),
           to: "/dashboard/settings/workspace/labels",
           icon: Tag,
+        },
+        {
+          id: "workspace-templates",
+          label: t("workspace:templates.title"),
+          to: "/dashboard/settings/workspace/templates",
+          icon: ListChecks,
         },
         ...(canImport
           ? [

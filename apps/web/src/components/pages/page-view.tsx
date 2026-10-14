@@ -1,4 +1,4 @@
-import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { useCallback, useContext, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "@/components/providers/auth-provider";
@@ -15,6 +15,7 @@ import useUpdatePage from "@/hooks/mutations/page/use-update-page";
 import { formatRelativeTime } from "@/lib/format";
 import { toast } from "@/lib/toast";
 import { PageEditor } from "./page-editor";
+import type { MoveTarget } from "./page-move";
 import { pageSaveQueue } from "./page-save-queue";
 import { useMentionMembers } from "./use-mention-members";
 import type { PageDetail } from "./page-types";
@@ -24,6 +25,10 @@ type PageViewProps = {
   canEdit: boolean;
   onAddChild: (parentId: string) => void;
   onDeleted: (page: PageDetail) => void;
+  // Keyboard/menu alternative to drag & drop; null when not possible.
+  moveUp: MoveTarget | null;
+  moveDown: MoveTarget | null;
+  onMove: (target: MoveTarget) => void;
 };
 
 export function PageView({
@@ -31,6 +36,9 @@ export function PageView({
   canEdit,
   onAddChild,
   onDeleted,
+  moveUp,
+  moveDown,
+  onMove,
 }: PageViewProps) {
   const { t, i18n } = useTranslation();
   const ownerId = useContext(AuthContext).user?.id ?? "";
@@ -104,6 +112,22 @@ export function PageView({
               >
                 <Plus className="size-3.5" />
                 {t("workspace:pages.addSubpage")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="h-7 cursor-pointer gap-2 text-sm"
+                disabled={!moveUp}
+                onClick={() => moveUp && onMove(moveUp)}
+              >
+                <ArrowUp className="size-3.5" />
+                {t("workspace:pages.moveUp")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="h-7 cursor-pointer gap-2 text-sm"
+                disabled={!moveDown}
+                onClick={() => moveDown && onMove(moveDown)}
+              >
+                <ArrowDown className="size-3.5" />
+                {t("workspace:pages.moveDown")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem

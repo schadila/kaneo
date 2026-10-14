@@ -57,10 +57,11 @@ import getInstanceStatus from "./instance/controllers/get-instance-status";
 import invitation from "./invitation";
 import label from "./label";
 import page from "./page";
+import taskTemplate from "./task-template";
 import mattermostIntegration from "./mattermost-integration";
 import mcpRoutes, { mcpWellKnownRoutes } from "./mcp";
 import { migrateColumns } from "./migrations/column-migration";
-import { migratePageTable } from "./page/migrate-page-table";
+import { runEdenMigrations } from "./eden-migrations";
 import notification from "./notification";
 import notificationPreferences from "./notification-preferences";
 import oauth from "./oauth";
@@ -837,6 +838,7 @@ export function createApp() {
   const timeEntryApi = api.route("/time-entry", timeEntry);
   const labelApi = api.route("/label", label);
   const pageApi = api.route("/page", page);
+  const taskTemplateApi = api.route("/task-template", taskTemplate);
   const notificationApi = api.route("/notification", notification);
   const notificationPreferencesApi = api.route(
     "/notification-preferences",
@@ -992,6 +994,7 @@ export function createApp() {
     invitationPublicApi,
     labelApi,
     pageApi,
+    taskTemplateApi,
     notificationApi,
     notificationPreferencesApi,
     projectApi,
@@ -1044,7 +1047,7 @@ export async function runStartupTasks() {
   await migrateNotificationPreferencesSchema();
   await migrateGitHubIntegration();
   await migrateColumns();
-  await migratePageTable();
+  await runEdenMigrations();
   await seedDefaultWorkspaceRoles();
 
   initializePlugins();
@@ -1127,6 +1130,7 @@ const {
   invitationPublicApi,
   labelApi,
   pageApi,
+  taskTemplateApi,
   mattermostIntegrationApi,
   notificationApi,
   notificationPreferencesApi,
@@ -1170,6 +1174,7 @@ export type AppType =
   | typeof timeEntryApi
   | typeof labelApi
   | typeof pageApi
+  | typeof taskTemplateApi
   | typeof notificationApi
   | typeof notificationPreferencesApi
   | typeof searchApi

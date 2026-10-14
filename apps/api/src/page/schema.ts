@@ -22,3 +22,8 @@ export const updatePageBody = z.object({
   icon: z.string().max(32).nullable().optional(),
   content: z.string().max(1_000_000).optional(),
 });
+
+export const movePageBody = z.object({
+  parentId: z.string().nullable(),
+  index: z.number().int().min(0),
+});
