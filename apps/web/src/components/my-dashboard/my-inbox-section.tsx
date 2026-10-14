@@ -20,7 +20,8 @@ export function MyInboxSection() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<Filter>("unread");
-  const workspaces = useGetWorkspaces().data ?? [];
+  const { data: workspaceList } = useGetWorkspaces();
+  const workspaces = useMemo(() => workspaceList ?? [], [workspaceList]);
   // No workspaceId: the API returns notifications from every workspace.
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["notifications", "all-workspaces"],
