@@ -48,11 +48,11 @@ function MyDashboardPage() {
                   {t("workspace:dashboard.subtitle")}
                 </p>
               </div>
-              <div className="grid gap-5 lg:grid-cols-5">
-                <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
+                <div className="min-w-0 lg:col-span-3">
                   <MyTasksSection />
                 </div>
-                <div className="flex flex-col gap-5 lg:col-span-2">
+                <div className="flex min-w-0 flex-col gap-5 lg:col-span-2">
                   <MyInboxSection />
                   <MyRecentPagesSection />
                 </div>
