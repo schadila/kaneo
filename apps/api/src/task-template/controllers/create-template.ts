@@ -3,6 +3,7 @@ import {
   type TaskTemplateItem,
   taskTemplateTable,
 } from "../task-template-table";
+import { normalizeTemplate } from "../normalize-template";
 
 type CreateTemplateInput = {
   workspaceId: string;
@@ -17,7 +18,7 @@ async function createTemplate(userId: string, input: CreateTemplateInput) {
     .values({ ...input, createdBy: userId, updatedBy: userId })
     .returning();
   if (!template) throw new Error("Failed to create template");
-  return template;
+  return normalizeTemplate(template);
 }
 
 export default createTemplate;

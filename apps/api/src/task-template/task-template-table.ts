@@ -11,6 +11,9 @@ export type TaskTemplateItem = {
   dueOffsetDays: number | null;
   // Workspace label names; resolved to the workspace labels when applied.
   labels: string[];
+  // Index of an earlier main task in items; null = main task. Templates saved
+  // before subtasks existed have no field, which means null.
+  parentIndex?: number | null;
 };
 
 // Workspace task templates ("Vorlagen"). Fork-only, like the page table: not

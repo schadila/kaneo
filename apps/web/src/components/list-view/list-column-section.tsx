@@ -11,6 +11,7 @@ import { cn } from "@/lib/cn";
 import { getColumnIcon } from "@/lib/column";
 import { EASE_OUT } from "@/lib/motion";
 import type { ProjectWithTasks } from "@/types/project";
+import { useSubtaskTree } from "./subtask-tree-context";
 import TaskRow from "./task-row";
 
 type Column = ProjectWithTasks["columns"][number];
@@ -38,6 +39,9 @@ const ListColumnSection = memo(function ListColumnSection({
 }: ListColumnSectionProps) {
   const { t } = useTranslation();
   const [animateExpand, setAnimateExpand] = useState(false);
+  // Subtasks with a visible parent render under that parent instead.
+  const { isNested } = useSubtaskTree();
+  const rowTasks = column.tasks.filter((task) => !isNested(task.id));
   const { setNodeRef } = useDroppable({
     id: column.id,
     data: { type: "column", column },
@@ -113,11 +117,11 @@ const ListColumnSection = memo(function ListColumnSection({
           )}
         >
           <SortableContext
-            items={column.tasks}
+            items={rowTasks}
             strategy={verticalListSortingStrategy}
           >
             <AnimatePresence initial={false} mode="popLayout">
-              {column.tasks.map((task) => (
+              {rowTasks.map((task) => (
                 <motion.div
                   key={task.id}
                   initial={{ opacity: 0 }}
@@ -131,7 +135,7 @@ const ListColumnSection = memo(function ListColumnSection({
             </AnimatePresence>
           </SortableContext>
 
-          {column.tasks.length === 0 && (
+          {rowTasks.length === 0 && (
             <div className="py-6 px-4 text-center text-xs text-muted-foreground">
               {t("tasks:listView.noTasks")}
             </div>

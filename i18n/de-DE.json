@@ -2944,7 +2944,9 @@
 			"deleteAction": "Aufgabe löschen",
 			"completeAria": "Teilaufgabe als erledigt markieren",
 			"progress": "{{completed}} von {{total}} Unteraufgaben abgeschlossen",
-			"noCompletionColumn": "This project has no matching column for completing or reopening this subtask."
+			"noCompletionColumn": "This project has no matching column for completing or reopening this subtask.",
+			"expand": "Unteraufgaben anzeigen",
+			"collapse": "Unteraufgaben ausblenden"
 		},
 		"properties": {
 			"title": "Eigenschaften",
@@ -3502,7 +3504,7 @@
 			"description": "Beschreibung",
 			"descriptionPlaceholder": "Wofür ist diese Vorlage? (optional)",
 			"tasks": "Tasks",
-			"tasksHint": "Fällig: Tage nach dem Startdatum (leer = ohne Fälligkeit). Labels werden über den Namen den Workspace-Labels zugeordnet.",
+			"tasksHint": "Fällig: Tage nach dem Startdatum (leer = ohne Fälligkeit). Labels werden über den Namen den Workspace-Labels zugeordnet. Einrücken macht einen Task zur Unteraufgabe der Hauptaufgabe darüber.",
 			"itemTitle": "Task-Titel",
 			"itemTitlePlaceholder": "Task-Titel",
 			"priority": "Priorität",
@@ -3539,7 +3541,11 @@
 			"createTasks_other": "{{count}} Tasks erstellen",
 			"applied_one": "{{count}} Task erstellt",
 			"applied_other": "{{count}} Tasks erstellt",
-			"applyFailed": "Tasks konnten nicht erstellt werden"
+			"applyFailed": "Tasks konnten nicht erstellt werden",
+			"makeSubtask": "Zur Unteraufgabe der Aufgabe darüber machen",
+			"makeMainTask": "Zur Hauptaufgabe machen",
+			"subtaskCount_one": "{{count}} Unteraufgabe",
+			"subtaskCount_other": "{{count}} Unteraufgaben"
 		}
 	},
 	"team": {

@@ -24,6 +24,7 @@ import useApplyTaskTemplate from "@/hooks/mutations/task-template/use-apply-task
 import { useGetTasks } from "@/hooks/queries/task/use-get-tasks";
 import useGetTaskTemplates from "@/hooks/queries/task-template/use-get-task-templates";
 import useGetProjectMembers from "@/hooks/queries/workspace-users/use-get-project-members";
+import { cn } from "@/lib/cn";
 import { formatDateShort } from "@/lib/format";
 import { getPriorityIcon } from "@/lib/priority";
 import { toast } from "@/lib/toast";
@@ -209,7 +210,11 @@ export function ApplyTemplateDialog({
                     {preview.map((item) => (
                       <li
                         key={item.previewKey}
-                        className="flex items-center gap-2 border-border/60 border-b px-3 py-1.5 text-sm last:border-b-0"
+                        className={cn(
+                          "flex items-center gap-2 border-border/60 border-b px-3 py-1.5 text-sm last:border-b-0",
+                          item.parentIndex != null &&
+                            "pl-9 text-muted-foreground",
+                        )}
                       >
                         <span className="flex w-4 justify-center">
                           {getPriorityIcon(item.priority)}

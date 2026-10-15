@@ -57,6 +57,7 @@ import getInstanceStatus from "./instance/controllers/get-instance-status";
 import invitation from "./invitation";
 import label from "./label";
 import page from "./page";
+import subtaskMap from "./subtask-map";
 import taskTemplate from "./task-template";
 import mattermostIntegration from "./mattermost-integration";
 import mcpRoutes, { mcpWellKnownRoutes } from "./mcp";
@@ -839,6 +840,7 @@ export function createApp() {
   const labelApi = api.route("/label", label);
   const pageApi = api.route("/page", page);
   const taskTemplateApi = api.route("/task-template", taskTemplate);
+  const subtaskMapApi = api.route("/subtask-map", subtaskMap);
   const notificationApi = api.route("/notification", notification);
   const notificationPreferencesApi = api.route(
     "/notification-preferences",
@@ -995,6 +997,7 @@ export function createApp() {
     labelApi,
     pageApi,
     taskTemplateApi,
+    subtaskMapApi,
     notificationApi,
     notificationPreferencesApi,
     projectApi,
@@ -1131,6 +1134,7 @@ const {
   labelApi,
   pageApi,
   taskTemplateApi,
+  subtaskMapApi,
   mattermostIntegrationApi,
   notificationApi,
   notificationPreferencesApi,
@@ -1175,6 +1179,7 @@ export type AppType =
   | typeof labelApi
   | typeof pageApi
   | typeof taskTemplateApi
+  | typeof subtaskMapApi
   | typeof notificationApi
   | typeof notificationPreferencesApi
   | typeof searchApi

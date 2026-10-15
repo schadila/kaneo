@@ -5,6 +5,7 @@ import { columnTable, labelTable } from "../../database/schema";
 import createLabel from "../../label/controllers/create-label";
 import { assertProjectScope } from "../../page/assert-project-scope";
 import createTask from "../../task/controllers/create-task";
+import createTaskRelation from "../../task-relation/controllers/create-task-relation";
 import { templateDueDate } from "../due-date";
 import { taskTemplateTable } from "../task-template-table";
 
@@ -78,6 +79,21 @@ async function applyTemplate(
       if (color)
         await createLabel(name, color, task.id, template.workspaceId, userId);
     }
+  }
+
+  // Items are stored parents-first, so every parent exists by now.
+  for (const [index, item] of template.items.entries()) {
+    const parentId =
+      item.parentIndex != null ? taskIds[item.parentIndex] : undefined;
+    const childId = taskIds[index];
+    if (!parentId || !childId) continue;
+    await createTaskRelation({
+      sourceTaskId: parentId,
+      targetTaskId: childId,
+      relationType: "subtask",
+      userId,
+      workspaceId: template.workspaceId,
+    });
   }
 
   return { created: taskIds.length, taskIds };

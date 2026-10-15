@@ -1,5 +1,6 @@
 import { z } from "../openapi";
 import { VALID_PRIORITIES } from "../task/validate-task-fields";
+import { templateItemsProblem } from "./validate-items";
 
 export const templateParam = z.object({ id: z.string() });
 
@@ -18,13 +19,30 @@ export const templateItemSchema = z
       .nullable()
       .default(null),
     labels: z.array(z.string().max(100)).max(20).default([]),
+    parentIndex: z.number().int().min(0).nullable().default(null).openapi({
+      description:
+        "Makes this item a subtask of the earlier main task at this index in items (one level)",
+    }),
   })
   .openapi("TaskTemplateItem");
+
+const templateItems = z
+  .array(templateItemSchema)
+  .max(100)
+  .superRefine((items, ctx) => {
+    const problem = templateItemsProblem(items);
+    if (problem)
+      ctx.addIssue({
+        code: "custom",
+        message: problem.message,
+        path: [problem.index, "parentIndex"],
+      });
+  });
 
 const templateFields = {
   name: z.string().trim().min(1).max(200),
   description: z.string().max(2000).default(""),
-  items: z.array(templateItemSchema).max(100),
+  items: templateItems,
 };
 
 export const createTemplateBody = z.object({

@@ -37,6 +37,15 @@ vi.mock("@/store/project", () => ({
   default: () => ({ setProject: m.setProject }),
 }));
 vi.mock("./task-row", () => ({ default: () => null }));
+vi.mock("./use-subtask-tree", () => ({
+  useSubtaskTree: () => ({
+    hasNesting: false,
+    childrenOf: () => [],
+    isNested: () => false,
+    isOpen: () => false,
+    toggle: () => {},
+  }),
+}));
 vi.mock("../bulk-selection/bulk-toolbar", () => ({ default: () => null }));
 vi.mock("../shared/modals/create-task-modal", () => ({ default: () => null }));
 vi.mock("../shared/modals/archive-tasks-modal", () => ({

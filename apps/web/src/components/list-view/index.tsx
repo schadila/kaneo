@@ -29,6 +29,8 @@ import BulkToolbar from "../bulk-selection/bulk-toolbar";
 import { ArchiveTasksModal } from "../shared/modals/archive-tasks-modal";
 import CreateTaskModal from "../shared/modals/create-task-modal";
 import ListColumnSection from "./list-column-section";
+import { SubtaskTreeContext } from "./subtask-tree-context";
+import { useSubtaskTree } from "./use-subtask-tree";
 
 type ListViewProps = {
   project: ProjectWithTasks;
@@ -49,6 +51,7 @@ function ListView({
   );
   const clearFocus = useBulkSelectionStore((state) => state.clearFocus);
   const { mutate: updateTask } = useUpdateTask();
+  const subtaskTree = useSubtaskTree(project);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<
@@ -306,25 +309,27 @@ function ListView({
       onDragEnd={handleDragEnd}
       modifiers={[snapCenterToCursor]}
     >
-      <div className="w-full h-full overflow-auto bg-muted/20">
-        <div className="divide-y divide-border/50">
-          {project.columns.map((column) => (
-            <ListColumnSection
-              key={column.id}
-              column={column}
-              projectSlug={project.slug ?? ""}
-              isExpanded={Boolean(expandedSections[column.id])}
-              showDropIndicator={
-                Boolean(activeId) && overColumnId === column.id
-              }
-              disableCollectionActions={disableCollectionActions}
-              onToggle={toggleSection}
-              onAddTask={handleAddTask}
-              onArchive={handleArchiveClick}
-            />
-          ))}
+      <SubtaskTreeContext.Provider value={subtaskTree}>
+        <div className="w-full h-full overflow-auto bg-muted/20">
+          <div className="divide-y divide-border/50">
+            {project.columns.map((column) => (
+              <ListColumnSection
+                key={column.id}
+                column={column}
+                projectSlug={project.slug ?? ""}
+                isExpanded={Boolean(expandedSections[column.id])}
+                showDropIndicator={
+                  Boolean(activeId) && overColumnId === column.id
+                }
+                disableCollectionActions={disableCollectionActions}
+                onToggle={toggleSection}
+                onAddTask={handleAddTask}
+                onArchive={handleArchiveClick}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      </SubtaskTreeContext.Provider>
 
       <DragOverlay dropAnimation={reduceMotion ? null : undefined}>
         {activeTask && (

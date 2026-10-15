@@ -70,7 +70,17 @@ Sidebar → „Mein Dashboard“) — workspace-übergreifend:
 Tasks mit Titel, Priorität, Labels und Fälligkeit „N Tage nach Start“. Im
 Projekt (alle Task-Ansichten, Toolbar) „Vorlage anwenden“: Vorlage, Startdatum,
 Spalte und Zuständige wählen, Vorschau mit berechneten Fälligkeiten, dann
-werden alle Tasks auf einmal angelegt.
+werden alle Tasks auf einmal angelegt. Einträge können **Unteraufgaben** einer
+Hauptaufgabe darüber sein (eine Ebene, im Editor per Einrücken); beim Anwenden
+werden sie über Kaneos Task-Beziehung `subtask` verknüpft.
+
+**Aufklappbare Unteraufgaben in der Listenansicht** — Aufgaben mit
+Unteraufgaben (im selben Projekt) haben einen Pfeil; aufgeklappt stehen die
+Unteraufgaben eingerückt darunter (Status, Priorität, Fälligkeit,
+Zuständige, Klick öffnet sie). Unteraufgaben mit sichtbarer Hauptaufgabe
+erscheinen nicht zusätzlich als eigene Zeile; ist die Hauptaufgabe
+weggefiltert, bleiben sie normal sichtbar. Auf/Zu pro Projekt im
+localStorage (`eden:list-open-subtasks:<projectId>`).
 
 **Board-Karten abgehoben** — Karten liegen auf einer leicht helleren Fläche
 (Dark: `bg-white/[0.055]`, Light: weiss mit Schatten auf grau getönter
@@ -154,8 +164,16 @@ Task-Vorlagen unter `/api/task-template`, OpenAPI-Tag „Task templates“:
 | DELETE | `/task-template/{id}` | löschen (erzeugte Tasks bleiben) | + `task:update` |
 | POST | `/task-template/{id}/apply` | Tasks anlegen: `projectId`, optional `status` (Spalten-Slug, Default erste Spalte), `startDate` (ISO; Web schickt lokale 12:00), `assigneeId` | + `task:create`, Projektzugriff |
 
-`items[]`: `{ title, description?, priority, dueOffsetDays: int|null, labels: string[] }`
-(max. 100). „Anwenden“ ruft pro Eintrag Kaneos eigenes `createTask` auf
+`items[]`: `{ title, description?, priority, dueOffsetDays: int|null, labels: string[], parentIndex: int|null }`
+(max. 100). `parentIndex` = Index einer **früheren Hauptaufgabe** in `items`
+(eine Ebene; Verstösse → 400). Fehlt das Feld (ältere Vorlagen), gilt `null`.
+Nach dem Anlegen aller Tasks wird jede Unteraufgabe per `createTaskRelation`
+(`relationType: "subtask"`, Quelle = Hauptaufgabe) verknüpft.
+
+`GET /api/subtask-map/project/{projectId}` → `[{ parentId, childId }]` aller
+Unteraufgaben-Paare, bei denen beide Tasks im Projekt liegen (für die
+Listenansicht). Das Web lädt sie neu, sobald sich ein `subtaskCounts` im
+Board ändert. „Anwenden“ ruft pro Eintrag Kaneos eigenes `createTask` auf
 (Nummer, Aktivität, Events, Integrationen wie von Hand) und hängt Labels über
 `createLabel` an — Zuordnung über den **Namen** der Workspace-Labels, unbekannte
 Namen werden übersprungen.
@@ -288,6 +306,7 @@ apps/api/src/page/                     API-Modul (Routen, Controller, Zugriff,
                                        Tabelle, Startup-Migration, Erwähnungen)
 apps/api/src/task-template/            Vorlagen-API (inkl. apply, Tabelle, Migration)
 apps/api/src/eden-migrations.ts        Einstieg für Fork-Tabellen beim Start
+apps/api/src/subtask-map/              Unteraufgaben-Paare eines Projekts
 apps/web/src/components/task-templates/ Vorlagen-UI
 apps/web/src/components/pages/         Wiki/Docs-UI
 apps/web/src/components/my-dashboard/  Dashboard-UI
@@ -316,7 +335,9 @@ apps/web/src/components/project/views/use-go-to-project-view.ts
 apps/web/src/components/inbox/inbox-detail.tsx              „Seite öffnen“
 apps/web/src/components/inbox/notification-icon.tsx
 apps/web/src/components/notification/notification-text.ts
-apps/web/src/components/list-view/task-row.tsx              Listen-Styling
+apps/web/src/components/list-view/task-row.tsx              Listen-Styling, Aufklapp-Pfeil, Unteraufgaben
+apps/web/src/components/list-view/index.tsx                 SubtaskTreeContext (+ Mock im Test)
+apps/web/src/components/list-view/list-column-section.tsx   verschachtelte Unteraufgaben ausblenden
 apps/web/src/components/kanban-board/task-card/task-card-content.tsx  Board-Karten
 apps/web/src/components/kanban-board/column/index.tsx       Spaltenhintergrund
 apps/web/src/components/list-view/list-column-section.tsx
@@ -409,5 +430,8 @@ Checkliste nach dem Merge:
 - Seiten nur innerhalb desselben Wikis bzw. derselben Projekt-Docs
   verschiebbar (nicht zwischen Wiki und Projekten).
 - Drag & Drop im Seitenbaum nur mit Maus/Touch; Tastatur über das „…“-Menü.
-- Vorlagen: keine Unteraufgaben/Checklisten pro Task, keine Zuständigen pro
+- Vorlagen: Unteraufgaben nur eine Ebene tief, keine Zuständigen pro
   Eintrag (eine Person für alle beim Anwenden), Labels nur über den Namen.
+- Listenansicht: Unteraufgaben aus anderen Projekten werden nur gezählt,
+  nicht aufgeklappt; Unteraufgaben lassen sich dort nicht per Drag & Drop
+  umsortieren (in ihrer Hauptaufgabe öffnen oder Board nutzen).

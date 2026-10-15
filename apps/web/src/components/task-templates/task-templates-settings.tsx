@@ -72,8 +72,16 @@ export function TaskTemplatesSettings() {
           <p className="truncate font-medium text-sm">{template.name}</p>
           <p className="truncate text-muted-foreground text-xs">
             {t("workspace:templates.taskCount", {
-              count: template.items.length,
+              count: template.items.filter((item) => item.parentIndex == null)
+                .length,
             })}
+            {template.items.some((item) => item.parentIndex != null)
+              ? ` · ${t("workspace:templates.subtaskCount", {
+                  count: template.items.filter(
+                    (item) => item.parentIndex != null,
+                  ).length,
+                })}`
+              : ""}
             {template.description ? ` · ${template.description}` : ""}
           </p>
         </div>

@@ -5,6 +5,7 @@ import {
   type TaskTemplateItem,
   taskTemplateTable,
 } from "../task-template-table";
+import { normalizeTemplate } from "../normalize-template";
 
 type UpdateTemplateInput = {
   name: string;
@@ -24,7 +25,7 @@ async function updateTemplate(
     .returning();
   if (!template)
     throw new HTTPException(404, { message: "Template not found" });
-  return template;
+  return normalizeTemplate(template);
 }
 
 export default updateTemplate;

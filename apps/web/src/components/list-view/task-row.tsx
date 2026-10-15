@@ -3,7 +3,13 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { Calendar, CalendarClock, CalendarX, Trash2Icon } from "lucide-react";
+import {
+  Calendar,
+  CalendarClock,
+  CalendarX,
+  ChevronRight,
+  Trash2Icon,
+} from "lucide-react";
 import { type CSSProperties, useMemo, useState, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskProgressBadges } from "@/components/task/task-progress-badges";
@@ -42,6 +48,8 @@ import { useTaskCardFields } from "@/components/custom-fields/use-task-card-fiel
 import { TaskLabels } from "../kanban-board/task-labels";
 import { ContextMenu, ContextMenuTrigger } from "../ui/context-menu";
 import { EASE_OUT_CSS } from "@/lib/motion";
+import { SubtaskRow } from "./subtask-row";
+import { useSubtaskTree } from "./subtask-tree-context";
 
 type TaskRowProps = {
   task: Task;
@@ -98,6 +106,10 @@ function TaskRow({ task, projectSlug }: TaskRowProps) {
   const { data: workspaceUsers } = useGetActiveWorkspaceUsers(
     workspace?.id ?? "",
   );
+
+  const subtaskTree = useSubtaskTree();
+  const subtasks = subtaskTree.childrenOf(task.id);
+  const subtasksOpen = subtasks.length > 0 && subtaskTree.isOpen(task.id);
 
   const assignee = useMemo(() => {
     return workspaceUsers?.members?.find(
@@ -197,6 +209,41 @@ function TaskRow({ task, projectSlug }: TaskRowProps) {
             onKeyDown={handleKeyDown}
             onFocus={() => setFocusedTask(task.id)}
           >
+            {subtasks.length > 0 ? (
+              <button
+                type="button"
+                aria-expanded={subtasksOpen}
+                aria-label={t(
+                  subtasksOpen
+                    ? "tasks:subtasks.collapse"
+                    : "tasks:subtasks.expand",
+                  {
+                    defaultValue: subtasksOpen
+                      ? "Hide subtasks"
+                      : "Show subtasks",
+                  },
+                )}
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  subtaskTree.toggle(task.id);
+                }}
+                className="-ml-2 flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
+              >
+                <ChevronRight
+                  className={cn(
+                    "size-3.5 transition-transform",
+                    subtasksOpen && "rotate-90",
+                  )}
+                />
+              </button>
+            ) : (
+              // Keeps titles aligned once any row in the list has a chevron.
+              subtaskTree.hasNesting && (
+                <span className="-ml-2 size-5 shrink-0" aria-hidden="true" />
+              )
+            )}
             {showPriority && (
               <div className="flex-shrink-0 first:[&_svg]:h-4 first:[&_svg]:w-4">
                 {getPriorityIcon(task.priority ?? "")}
@@ -288,6 +335,25 @@ function TaskRow({ task, projectSlug }: TaskRowProps) {
           />
         )}
       </ContextMenu>
+
+      {subtasksOpen && project && (
+        <div className="bg-muted/30">
+          {subtasks.map((subtask) => {
+            const member = workspaceUsers?.members?.find(
+              (entry) => entry.userId === subtask.userId,
+            );
+            return (
+              <SubtaskRow
+                key={subtask.id}
+                task={subtask}
+                projectSlug={projectSlug}
+                columns={project.columns}
+                assignee={member?.user}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {isDeleteTaskModalOpen !== null && (
         <AlertDialog

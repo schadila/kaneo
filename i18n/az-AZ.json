@@ -2944,7 +2944,9 @@
 			"deleteAction": "Tapşırığı sil",
 			"completeAria": "Alt tapşırığı tamamlanmış kimi işarələ",
 			"noCompletionColumn": "This project has no matching column for completing or reopening this subtask.",
-			"progress": "{{completed}} of {{total}} subtasks completed"
+			"progress": "{{completed}} of {{total}} subtasks completed",
+			"collapse": "Hide subtasks",
+			"expand": "Show subtasks"
 		},
 		"properties": {
 			"title": "Xüsusiyyətlər",
@@ -3539,7 +3541,11 @@
 			"tasks": "Tasks",
 			"tasksHint": "Due: days after the start date (empty = no due date). Labels are matched to workspace labels by name.",
 			"template": "Template",
-			"title": "Task templates"
+			"title": "Task templates",
+			"makeMainTask": "Make main task",
+			"makeSubtask": "Make subtask of the task above",
+			"subtaskCount_one": "{{count}} subtask",
+			"subtaskCount_other": "{{count}} subtasks"
 		}
 	},
 	"team": {

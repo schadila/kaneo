@@ -2168,6 +2168,15 @@
             },
             "maxItems": 20,
             "default": []
+          },
+          "parentIndex": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "default": null,
+            "description": "Makes this item a subtask of the earlier main task at this index in items (one level)"
           }
         },
         "required": [
@@ -2190,6 +2199,21 @@
         "required": [
           "created",
           "taskIds"
+        ]
+      },
+      "SubtaskPair": {
+        "type": "object",
+        "properties": {
+          "parentId": {
+            "type": "string"
+          },
+          "childId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "parentId",
+          "childId"
         ]
       },
       "Notification": {
@@ -16447,6 +16471,74 @@
           },
           "404": {
             "description": "Template or project not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiKeyRateLimited"
+          }
+        }
+      }
+    },
+    "/subtask-map/project/{projectId}": {
+      "get": {
+        "operationId": "listProjectSubtaskPairs",
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "List subtask pairs of a project",
+        "description": "Parent/subtask pairs where both tasks belong to the project (relation type subtask)",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "projectId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subtask pairs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubtaskPair"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No access to the project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
             "content": {
               "application/json": {
                 "schema": {

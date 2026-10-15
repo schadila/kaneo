@@ -19,6 +19,7 @@ import {
   emptyDraft,
   fromDrafts,
   type ItemDraft,
+  effectiveSubtask,
   moveDraft,
   toDrafts,
 } from "./template-draft";
@@ -132,6 +133,7 @@ export function TemplateForm({
                 draft={draft}
                 index={index}
                 count={drafts.length}
+                isSubtask={effectiveSubtask(drafts, index)}
                 labels={labels}
                 onChange={(next) => update(index, next)}
                 onMove={(delta) =>

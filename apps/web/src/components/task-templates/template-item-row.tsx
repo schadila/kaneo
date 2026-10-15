@@ -1,4 +1,10 @@
-import { ArrowDown, ArrowUp, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  IndentDecrease,
+  IndentIncrease,
+  X,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +26,8 @@ type TemplateItemRowProps = {
   draft: ItemDraft;
   index: number;
   count: number;
+  // Shown indented under the main task above it.
+  isSubtask: boolean;
   labels: Array<{ name: string; color: string }>;
   onChange: (draft: ItemDraft) => void;
   onMove: (delta: -1 | 1) => void;
@@ -30,6 +38,7 @@ export function TemplateItemRow({
   draft,
   index,
   count,
+  isSubtask,
   labels,
   onChange,
   onMove,
@@ -45,7 +54,12 @@ export function TemplateItemRow({
     });
 
   return (
-    <li className="flex flex-col gap-2 border-border/60 border-b py-3 last:border-b-0">
+    <li
+      className={cn(
+        "flex flex-col gap-2 border-border/60 border-b py-3 last:border-b-0",
+        isSubtask && "ml-8 border-l-2 border-l-border pl-3",
+      )}
+    >
       <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
         <span className="w-5 shrink-0 text-right text-muted-foreground text-xs tabular-nums">
           {index + 1}.
@@ -103,6 +117,26 @@ export function TemplateItemRow({
           {t("workspace:templates.days")}
         </label>
         <div className="flex shrink-0 items-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            disabled={index === 0}
+            aria-pressed={isSubtask}
+            onClick={() => set({ isSubtask: !draft.isSubtask })}
+            aria-label={
+              isSubtask
+                ? t("workspace:templates.makeMainTask")
+                : t("workspace:templates.makeSubtask")
+            }
+            title={
+              isSubtask
+                ? t("workspace:templates.makeMainTask")
+                : t("workspace:templates.makeSubtask")
+            }
+          >
+            {isSubtask ? <IndentDecrease /> : <IndentIncrease />}
+          </Button>
           <Button
             type="button"
             variant="ghost"
