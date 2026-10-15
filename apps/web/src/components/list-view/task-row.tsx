@@ -338,20 +338,15 @@ function TaskRow({ task, projectSlug }: TaskRowProps) {
 
       {subtasksOpen && project && (
         <div className="bg-muted/30">
-          {subtasks.map((subtask) => {
-            const member = workspaceUsers?.members?.find(
-              (entry) => entry.userId === subtask.userId,
-            );
-            return (
-              <SubtaskRow
-                key={subtask.id}
-                task={subtask}
-                projectSlug={projectSlug}
-                columns={project.columns}
-                assignee={member?.user}
-              />
-            );
-          })}
+          {subtasks.map((subtask) => (
+            <SubtaskRow
+              key={subtask.id}
+              task={subtask}
+              projectSlug={projectSlug}
+              columns={project.columns}
+              members={workspaceUsers?.members}
+            />
+          ))}
         </div>
       )}
 

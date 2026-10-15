@@ -26,7 +26,7 @@ describe("buildSubtaskTree", () => {
     expect(tree.childrenOf.size).toBe(0);
   });
 
-  it("nests only one level deep", () => {
+  it("nests subtasks of subtasks at any depth", () => {
     const tree = buildSubtaskTree(
       [task("a"), task("b"), task("c")],
       [
@@ -35,8 +35,20 @@ describe("buildSubtaskTree", () => {
       ],
     );
     expect(tree.childrenOf.get("a")?.map((t) => t.id)).toEqual(["b"]);
-    expect(tree.childrenOf.has("b")).toBe(false);
-    expect(tree.nested.has("c")).toBe(false);
+    expect(tree.childrenOf.get("b")?.map((t) => t.id)).toEqual(["c"]);
+    expect([...tree.nested]).toEqual(["b", "c"]);
+  });
+
+  it("breaks cycles so every task stays reachable", () => {
+    const tree = buildSubtaskTree(
+      [task("a"), task("b")],
+      [
+        { parentId: "a", childId: "b" },
+        { parentId: "b", childId: "a" },
+      ],
+    );
+    expect(tree.nested.size).toBe(1);
+    expect(tree.childrenOf.size).toBe(1);
   });
 });
 

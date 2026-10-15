@@ -24,12 +24,26 @@ export function buildSubtaskTree<T extends TreeTask>(
       parentOf.set(childId, parentId);
   }
 
+  // Any depth is allowed; a link that would close a cycle is dropped so every
+  // task still ends up under a visible root row.
+  for (const task of tasks) {
+    let ancestor = parentOf.get(task.id);
+    const seen = new Set([task.id]);
+    while (ancestor) {
+      if (seen.has(ancestor)) {
+        parentOf.delete(task.id);
+        break;
+      }
+      seen.add(ancestor);
+      ancestor = parentOf.get(ancestor);
+    }
+  }
+
   const childrenOf = new Map<string, T[]>();
   const nested = new Set<string>();
   for (const task of tasks) {
     const parentId = parentOf.get(task.id);
-    // Only one level: a task that is itself nested cannot host children here.
-    if (!parentId || parentOf.has(parentId)) continue;
+    if (!parentId) continue;
     childrenOf.set(parentId, [...(childrenOf.get(parentId) ?? []), task]);
     nested.add(task.id);
   }

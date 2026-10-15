@@ -77,7 +77,10 @@ werden sie über Kaneos Task-Beziehung `subtask` verknüpft.
 **Aufklappbare Unteraufgaben in der Listenansicht** — Aufgaben mit
 Unteraufgaben (im selben Projekt) haben einen Pfeil; aufgeklappt stehen die
 Unteraufgaben eingerückt darunter (Status, Priorität, Fälligkeit,
-Zuständige, Klick öffnet sie). Unteraufgaben mit sichtbarer Hauptaufgabe
+Zuständige, Klick öffnet sie). Das gilt beliebig tief: Unteraufgaben von
+Unteraufgaben klappen unter ihrer Unteraufgabe auf, je Ebene weiter
+eingerückt (zyklische Verknüpfungen werden aufgebrochen). Unteraufgaben mit
+sichtbarer Hauptaufgabe
 erscheinen nicht zusätzlich als eigene Zeile; ist die Hauptaufgabe
 weggefiltert, bleiben sie normal sichtbar. Auf/Zu pro Projekt im
 localStorage (`eden:list-open-subtasks:<projectId>`).
