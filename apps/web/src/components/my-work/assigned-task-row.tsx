@@ -15,6 +15,8 @@ type AssignedTaskRowProps = {
   showLabels?: boolean;
   // Shown before the project on cross-workspace lists (personal dashboard).
   workspaceName?: string;
+  // Eden: rows already grouped under their project only need the task key.
+  hideProject?: boolean;
 };
 
 export function AssignedTaskRow({
@@ -22,6 +24,7 @@ export function AssignedTaskRow({
   workspaceId,
   showLabels = false,
   workspaceName,
+  hideProject = false,
 }: AssignedTaskRowProps) {
   const ProjectIcon =
     projectIcons[task.projectIcon as keyof typeof projectIcons] ??
@@ -50,13 +53,15 @@ export function AssignedTaskRow({
           {task.title}
         </span>
         <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs">
-          <span className="flex min-w-0 items-center gap-1 rounded-md bg-muted px-1.5 py-px font-medium text-foreground/90">
-            <ProjectIcon
-              className="size-3 shrink-0 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <span className="truncate">{task.projectName}</span>
-          </span>
+          {!hideProject && (
+            <span className="flex min-w-0 items-center gap-1 rounded-md bg-muted px-1.5 py-px font-medium text-foreground/90">
+              <ProjectIcon
+                className="size-3 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <span className="truncate">{task.projectName}</span>
+            </span>
+          )}
           <span className="shrink-0 font-mono">
             {task.number == null
               ? task.projectSlug

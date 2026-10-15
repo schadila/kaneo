@@ -3428,7 +3428,14 @@
 			"subtitle": "Your tasks, mentions and pages across all workspaces.",
 			"tasks": "My open tasks",
 			"title": "My dashboard",
-			"unread": "Unread"
+			"unread": "Unread",
+			"focus": "Focus",
+			"focusHint": "Overdue, due today or urgent",
+			"groupBy": "Group tasks by",
+			"groupByDue": "Due date",
+			"groupBySpace": "Space",
+			"overdueCount_other": "{{count}} overdue",
+			"todayCount_other": "{{count}} today"
 		},
 		"templates": {
 			"addItem": "Add task",

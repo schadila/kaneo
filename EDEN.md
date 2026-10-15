@@ -60,7 +60,11 @@ selbst und nur, wer die Seite sehen darf.
 **Persönliches Dashboard** (`/dashboard/me`, Startseite nach Login,
 Sidebar → „Mein Dashboard“) — workspace-übergreifend:
 - *Meine offenen Aufgaben*: alle zugewiesenen offenen Tasks aller Workspaces,
-  gruppiert nach Überfällig / Heute / Diese Woche / Später / Ohne Datum
+  gruppiert nach Überfällig / Heute / Diese Woche / Später / Ohne Datum.
+  Umschalter „Space“: Workspace → Projekt (dringendstes Projekt zuerst,
+  Workspaces einklappbar mit Überfällig/Heute-Zähler), darüber ein
+  „Fokus“-Block mit allem Überfälligen, heute Fälligen und Dringenden.
+  Ansicht und eingeklappte Workspaces merkt sich der Browser (localStorage)
 - *Erwähnungen & Inbox*: Benachrichtigungen aller Workspaces, Filter
   Ungelesen / Erwähnungen / Alle, „Alle gelesen“, Klick öffnet Task bzw. Seite
 - *Zuletzt bearbeitete Seiten*: eigene zuletzt erstellte/bearbeitete Seiten
