@@ -72,6 +72,11 @@ Projekt (alle Task-Ansichten, Toolbar) „Vorlage anwenden“: Vorlage, Startdat
 Spalte und Zuständige wählen, Vorschau mit berechneten Fälligkeiten, dann
 werden alle Tasks auf einmal angelegt.
 
+**Board-Karten abgehoben** — Karten liegen auf einer leicht helleren Fläche
+(Dark: `bg-white/[0.055]`, Light: weiss mit Schatten auf grau getönter
+Spalte), erledigte Karten treten zurück, Prioritätsbalken links wie in den
+Listen (`task-card-content.tsx`, `column/index.tsx`).
+
 **Task-Listen mit mehr Akzent** (Projekt-Listenansicht, „Meine Aufgaben“,
 Home „Up next“, Dashboard) — farbiger Prioritätsbalken links (dringend rot,
 hoch orange, mittel gelb, niedrig blau), kräftigere Titel, höhere Zeilen,
@@ -312,6 +317,8 @@ apps/web/src/components/inbox/inbox-detail.tsx              „Seite öffnen“
 apps/web/src/components/inbox/notification-icon.tsx
 apps/web/src/components/notification/notification-text.ts
 apps/web/src/components/list-view/task-row.tsx              Listen-Styling
+apps/web/src/components/kanban-board/task-card/task-card-content.tsx  Board-Karten
+apps/web/src/components/kanban-board/column/index.tsx       Spaltenhintergrund
 apps/web/src/components/list-view/list-column-section.tsx
 apps/web/src/components/my-work/assigned-task-row.tsx
 apps/web/src/routes/_layout/_authenticated/dashboard/index.tsx  Login-Ziel

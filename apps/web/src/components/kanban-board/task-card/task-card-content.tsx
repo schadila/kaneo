@@ -30,6 +30,7 @@ import {
 import { getInitials } from "@/lib/get-initials";
 import { getPriorityLabel } from "@/lib/i18n/domain";
 import { getPriorityIcon } from "@/lib/priority";
+import { priorityAccentClass } from "@/lib/priority-accent";
 import { toast } from "@/lib/toast";
 import useBulkSelectionStore from "@/store/bulk-selection";
 import useProjectStore from "@/store/project";
@@ -125,13 +126,15 @@ function TaskCardContent({
             className={cn(
               "group relative rounded-lg border p-3 transition-[background-color,border-color,box-shadow,scale] duration-150 ease-out active:scale-[0.98]",
               disableDragDrop ? "cursor-default" : "cursor-move",
-              // Finished work steps back so open cards draw the eye.
+              // Eden: cards sit on a lifted surface so they stand out from
+              // the column; finished work steps back so open cards draw the eye.
               taskIsCompleted
-                ? "bg-background/60"
-                : "bg-background shadow-xs/5",
+                ? "bg-white/60 dark:bg-white/[0.025]"
+                : "bg-white shadow-sm/5 dark:bg-white/[0.055]",
               isDragging
                 ? "border-ring/40 bg-card shadow-lg"
-                : "hover:bg-background hover:shadow-sm",
+                : "hover:bg-white hover:shadow-md/10 dark:hover:bg-white/[0.08]",
+              !taskIsCompleted && priorityAccentClass(task.priority),
               isTaskSelected
                 ? "border-ring/40 bg-accent/50 shadow-sm ring-1 ring-inset ring-ring/30"
                 : isOverdue

@@ -37,7 +37,7 @@ export const columnVariants = cva(
       {
         isDropzoneOver: false,
         backgroundImage: false,
-        class: "border bg-muted/40 shadow-xs/5 dark:bg-card/90",
+        class: "border bg-muted/80 shadow-xs/5 dark:bg-card/90",
       },
       {
         isDropzoneOver: true,
