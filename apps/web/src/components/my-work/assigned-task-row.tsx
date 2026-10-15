@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import projectIcons from "@/constants/project-icons";
 import type { AssignedTask } from "@/fetchers/task/get-assigned-tasks";
 import { cn } from "@/lib/cn";
 import { getColumnIcon } from "@/lib/column";
@@ -22,6 +23,10 @@ export function AssignedTaskRow({
   showLabels = false,
   workspaceName,
 }: AssignedTaskRowProps) {
+  const ProjectIcon =
+    projectIcons[task.projectIcon as keyof typeof projectIcons] ??
+    projectIcons.Layout;
+
   return (
     <Link
       to="/dashboard/workspace/$workspaceId/project/$projectId/task/$taskId"
@@ -45,17 +50,23 @@ export function AssignedTaskRow({
           {task.title}
         </span>
         <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs">
+          <span className="flex min-w-0 items-center gap-1 rounded-md bg-muted px-1.5 py-px font-medium text-foreground/90">
+            <ProjectIcon
+              className="size-3 shrink-0 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <span className="truncate">{task.projectName}</span>
+          </span>
           <span className="shrink-0 font-mono">
             {task.number == null
               ? task.projectSlug
               : `${task.projectSlug}-${task.number}`}
           </span>
-          <span aria-hidden="true">·</span>
-          <span className="truncate">
-            {workspaceName
-              ? `${workspaceName} / ${task.projectName}`
-              : task.projectName}
-          </span>
+          {workspaceName && (
+            <span className="min-w-0 shrink-[2] truncate">
+              · {workspaceName}
+            </span>
+          )}
         </span>
       </span>
       {showLabels && task.labels.length > 0 && (
