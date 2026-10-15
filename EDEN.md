@@ -78,8 +78,25 @@ hoch orange, mittel gelb, niedrig blau), kräftigere Titel, höhere Zeilen,
 Fälligkeit als farbiger Badge, Labels als Chips, erledigte Tasks
 durchgestrichen, deutlichere Zähler in Spalten-Überschriften.
 
+**Tasks in andere Projekte verschieben** — zusätzlich zur Eigenschaft
+„Projekt“ in der Task-Ansicht (Kaneo-Standard) jetzt auch per Rechtsklick auf
+eine Karte (Board, Liste, Backlog) → „Aufgabe verschieben“ → Zielprojekt. Die
+Spalte bleibt, wenn das Zielprojekt eine mit gleichem Slug hat, sonst die erste.
+
 **Kleinigkeiten** — Wechsel von „Docs“ zurück auf „Tasks“/„Backlog“ und
 Projektwechsel bleiben im jeweiligen Reiter.
+
+## Korrekturen an Kaneo
+
+**Projekteinstellungen speicherten unzuverlässig** (Kaneo 2.46.2):
+`PUT /project/{id}` ersetzt alle Felder. Das Autospeichern auf
+„Allgemein“ nahm unveränderte Felder aus dem Projekt-Store (Board-Daten), der
+nach dem Speichern nie aktualisiert wurde — eine zweite Änderung schrieb die
+erste zurück; `isPublic` kam ebenfalls von dort und konnte eine
+Sichtbarkeits-Änderung rückgängig machen. Fix: Werte unveränderter Felder aus
+dem zuletzt gespeicherten Stand (`project-update-payload.ts`, mit Test),
+Projektdaten aus der frischen Abfrage `["projects", ws, id]`, nach dem
+Speichern auch `["tasks", id]` invalidieren. Kandidat für einen Upstream-PR.
 
 ## Architektur
 
@@ -285,6 +302,10 @@ apps/web/src/components/nav-main.tsx        Sidebar: Mein Dashboard, Wiki
 apps/web/src/components/common/project-layout.tsx           Docs-Reiter, „Vorlage anwenden“
 apps/web/src/components/common/project-layout.test.tsx      Mock für den Vorlagen-Button
 apps/web/src/components/settings/nav/build-settings-nav.ts  Link „Task-Vorlagen“ (+ Test)
+apps/web/src/components/settings/project-general/use-project-autosave.ts  Fix Autospeichern
+apps/web/src/components/settings/project-general/project-general-page.tsx Fix: frische Projektdaten
+apps/web/src/components/kanban-board/task-card-context-menu/task-card-context-menu-content.tsx
+                                            Untermenü „Aufgabe verschieben“ (+ Mock im Test)
 apps/web/src/components/project/views/project-scope-toggle.tsx
 apps/web/src/components/project/views/use-go-to-project-view.ts
 apps/web/src/components/inbox/inbox-detail.tsx              „Seite öffnen“

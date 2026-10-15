@@ -34,6 +34,7 @@ import { getTaskPath } from "@/lib/task-link";
 import { toast } from "@/lib/toast";
 import useProjectStore from "@/store/project";
 import type Task from "@/types/task";
+import { MoveToProjectSubmenu } from "./move-to-project-submenu";
 
 type TaskCardContext = {
   worskpaceId: string;
@@ -318,6 +319,13 @@ export default function TaskCardContextMenuContent({
             ))}
           </ContextMenuSubContent>
         </ContextMenuSub>
+      )}
+
+      {canEdit && (
+        <MoveToProjectSubmenu
+          task={task}
+          workspaceId={taskCardContext.worskpaceId}
+        />
       )}
 
       {(canCreate || canEdit || canDelete) && (

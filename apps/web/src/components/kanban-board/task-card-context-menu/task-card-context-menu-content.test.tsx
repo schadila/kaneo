@@ -5,6 +5,9 @@ import TaskCardContextMenuContent from "./task-card-context-menu-content";
 
 const duplicateTask = vi.fn();
 const canCreateTasks = vi.fn(() => true);
+vi.mock("./move-to-project-submenu", () => ({
+  MoveToProjectSubmenu: () => null,
+}));
 vi.mock("@/hooks/mutations/task/use-duplicate-task", () => ({
   useDuplicateTask: () => ({ mutate: duplicateTask }),
 }));

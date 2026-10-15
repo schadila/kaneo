@@ -8,6 +8,7 @@ import { ProjectDetailsSection } from "@/components/settings/project-general/pro
 import { ProjectTasksSection } from "@/components/settings/project-general/project-tasks-section";
 import { useProjectAutosave } from "@/components/settings/project-general/use-project-autosave";
 import { SettingsPage } from "@/components/settings/settings-page";
+import useGetProject from "@/hooks/queries/project/use-get-project";
 import { useGetTasks } from "@/hooks/queries/task/use-get-tasks";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
@@ -24,8 +25,14 @@ export function ProjectGeneralPage() {
   const { canManageProjects, canDeleteProjects } = useWorkspacePermission();
   const canEdit = canManageProjects();
   const canDelete = canDeleteProjects();
+  // Eden fix: autosave from the fresh project query, not the project store —
+  // the store can still hold another project or values from before a save.
+  const { data: savedProject } = useGetProject({
+    id: projectId,
+    workspaceId: workspace?.id ?? "",
+  });
   const { form, flushPendingSave } = useProjectAutosave({
-    project,
+    project: savedProject?.id === projectId ? savedProject : undefined,
     workspaceId: workspace?.id,
     canEdit,
   });

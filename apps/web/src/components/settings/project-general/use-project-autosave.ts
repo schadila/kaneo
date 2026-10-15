@@ -11,12 +11,23 @@ import {
   normalizeProjectValues,
   type ProjectFormValues,
 } from "@/components/settings/project-general/project-form-values";
+import { buildProjectUpdate } from "@/components/settings/project-general/project-update-payload";
 import useUpdateProject from "@/hooks/mutations/project/use-update-project";
 import { toast } from "@/lib/toast";
-import type { ProjectWithTasks } from "@/types/project";
 
 type UseProjectAutosaveOptions = {
-  project: ProjectWithTasks | undefined;
+  // The freshly fetched project (["projects", workspaceId, id]); it is
+  // invalidated after every save, unlike the board data in the project store.
+  project:
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        description?: string | null;
+        icon?: string | null;
+        isPublic?: boolean | null;
+      }
+    | undefined;
   workspaceId: string | undefined;
   canEdit: boolean;
 };
@@ -92,15 +103,12 @@ export function useProjectAutosave({
         try {
           await updateProject({
             id: project.id,
-            name: changes.name ? normalizedData.name : project.name,
-            slug: changes.slug ? normalizedData.slug : project.slug,
-            description: changes.description
-              ? normalizedData.description
-              : (project.description ?? ""),
-            icon: changes.icon
-              ? normalizedData.icon
-              : (project.icon ?? "Layout"),
-            isPublic: !!project.isPublic,
+            ...buildProjectUpdate(
+              project,
+              lastSavedRef.current,
+              normalizedData,
+              changes,
+            ),
           });
 
           form.reset(normalizedData, { keepDirty: false });
@@ -115,6 +123,8 @@ export function useProjectAutosave({
             queryClient.invalidateQueries({
               queryKey: ["projects", workspaceId, project.id],
             }),
+            // Board data (project store, header, sidebar) carries the name too.
+            queryClient.invalidateQueries({ queryKey: ["tasks", project.id] }),
           ]);
           succeeded = true;
         } catch (error) {
@@ -147,19 +157,7 @@ export function useProjectAutosave({
         }
       }
     },
-    [
-      project?.id,
-      project?.isPublic,
-      project?.name,
-      project?.slug,
-      project?.description,
-      project?.icon,
-      updateProject,
-      queryClient,
-      workspaceId,
-      form,
-      t,
-    ],
+    [project, updateProject, queryClient, workspaceId, form, t],
   );
 
   const saveProjectRef = useRef(saveProject);
