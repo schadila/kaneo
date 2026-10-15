@@ -26,6 +26,8 @@ export function MyInboxSection() {
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["notifications", "all-workspaces"],
     queryFn: () => getNotifications(),
+    refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
   });
   const { mutate: markAllRead, isPending } = useMutation({
     mutationFn: () => markAllNotificationsAsRead(),

@@ -21,6 +21,11 @@ export function useAllAssignedTasks() {
     queries: workspaces.map((workspace) => ({
       queryKey: ["assigned-tasks", workspace.id, { countOnly: false }],
       queryFn: () => getAssignedTasks(workspace.id),
+      // Same as useGetAssignedTasks: the app default skips refetching on
+      // mount, so opening the dashboard would show a stale list.
+      refetchOnMount: "always" as const,
+      refetchInterval: 30_000,
+      refetchOnWindowFocus: "always" as const,
     })),
     combine: (results) => {
       const tasks: DashboardTask[] = results.flatMap((result, index) => {

@@ -6,6 +6,8 @@ function useGetRecentPages() {
   return useQuery({
     queryKey: [...pageQueryKeys.all, "recent"],
     queryFn: listRecentPages,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: "always",
   });
 }
 
